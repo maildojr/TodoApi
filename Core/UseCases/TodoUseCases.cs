@@ -60,6 +60,19 @@ namespace TodoApi.Core.UseCases
             return await _todoRepository.UpdateAsync(existingTodo);
         }
 
+        public async Task<TodoItem> CompleteTodoAsync(int id)
+        {
+            if (id <= 0) throw new ArgumentException("Id invalid");
+
+            var existingTodo = await _todoRepository.GetByIdAsync(id);
+            if (existingTodo == null) throw new ArgumentException("Task not found");
+
+            existingTodo.IsCompleted = true;
+            existingTodo.UpdatedAt = DateTime.UtcNow;
+
+            return await _todoRepository.UpdateAsync(existingTodo);
+        }
+
         public async Task<bool> DeleteTodoAsync(int id)
         {
             if (id <= 0) throw new ArgumentException("Id invalid");

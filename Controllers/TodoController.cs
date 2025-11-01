@@ -83,10 +83,32 @@ namespace TodoApi.Controllers
                 var todo = await _todoUseCases.UpdateTodoAsync(id, request.Title, request.Description, request.IsCompleted);
                 if (todo == null) return NotFound(new { message = "Task not found" });
                 return Ok(TodoResponse.FromTodoItem(todo));
-            } catch (ArgumentException ex)
+            }
+            catch (ArgumentException ex)
             {
                 return BadRequest(new { message = ex.Message });
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+            }
+        }
+        
+        // PUT: api/todo/{id}/complete
+        [HttpPut("{id}/complete")]
+        public async Task<IActionResult> Complete(int id)
+        {
+            try
+            {
+                var todo = await _todoUseCases.CompleteTodoAsync(id);
+                if (todo == null) return NotFound(new { message = "Task not found" });
+                return Ok(TodoResponse.FromTodoItem(todo));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Internal server error", error = ex.Message });
             }
